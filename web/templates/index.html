@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Arena — Multi-Agent AI Dashboard</title>
+    <meta name="description" content="Watch AI agents collaborate in real-time to accomplish complex missions using LangGraph, MCP, RAG, and ChromaDB.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+                        <line x1="12" y1="22" x2="12" y2="15.5"/>
+                        <polyline points="22 8.5 12 15.5 2 8.5"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Agent Arena</span>
+                <span class="logo-badge">LIVE</span>
+            </div>
+            <div class="header-stats" id="headerStats">
+                <div class="stat-chip" id="statTurn">
+                    <span class="stat-label">Turn</span>
+                    <span class="stat-value">—</span>
+                </div>
+                <div class="stat-chip" id="statStatus">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value">Idle</span>
+                </div>
+                <div class="stat-chip" id="statMemory">
+                    <span class="stat-label">Memory</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Mission Control Panel -->
+        <section class="mission-panel" id="missionPanel">
+            <div class="mission-glow"></div>
+            <h1 class="mission-title">Mission Control</h1>
+            <p class="mission-subtitle">Define your mission and watch AI agents collaborate to achieve it</p>
+            <div class="mission-input-group">
+                <input type="text" id="missionInput" class="mission-input"
+                       value="Build a self-sustaining tech startup in 30 turns"
+                       placeholder="Enter your mission...">
+                <button id="startBtn" class="start-btn" onclick="startGame()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Launch Arena
+                </button>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="arch-section" id="archSection">
+            <h2 class="section-title">Agent Pipeline</h2>
+            <div class="pipeline">
+                <div class="pipeline-agent" id="pipe-planner" data-agent="planner">
+                    <div class="pipe-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
+                            <line x1="10" y1="21" x2="14" y2="21"/>
+                        </svg>
+                    </div>
+                    <span class="pipe-label">Planner</span>
+                    <div class="pipe-pulse"></div>
+                </div>
+                <div class="pipeline-arrow">
+                    <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8h28M22 2l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </div>
+                <div class="pipeline-agent" id="pipe-researcher" data-agent="researcher">
+                    <div class="pipe-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </div>
+                    <span class="pipe-label">Researcher</span>
+                    <div class="pipe-pulse"></div>
+                </div>
+                <div class="pipeline-arrow">
+                    <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8h28M22 2l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </div>
+                <div class="pipeline-agent" id="pipe-coder" data-agent="coder">
+                    <div class="pipe-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                        </svg>
+                    </div>
+                    <span class="pipe-label">Coder</span>
+                    <div class="pipe-pulse"></div>
+                </div>
+                <div class="pipeline-arrow">
+                    <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8h28M22 2l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </div>
+                <div class="pipeline-agent" id="pipe-critic" data-agent="critic">
+                    <div class="pipe-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span class="pipe-label">Critic</span>
+                    <div class="pipe-pulse"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Feed + Agent Detail Panels -->
+        <section class="game-grid" id="gameGrid">
+            <!-- Live Activity Feed -->
+            <div class="feed-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="panel-dot"></span>
+                        Live Activity Feed
+                    </h2>
+                    <span class="event-count" id="eventCount">0 events</span>
+                </div>
+                <div class="feed-scroll" id="feedScroll">
+                    <div class="feed-empty" id="feedEmpty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <p>Launch a mission to see agent activity</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Detail Cards -->
+            <div class="agents-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="panel-dot green"></span>
+                        Agent Status
+                    </h2>
+                </div>
+                <div class="agent-cards" id="agentCards">
+                    <!-- Planner -->
+                    <div class="agent-card" id="card-planner" data-agent="planner">
+                        <div class="card-accent" style="--accent: #a78bfa"></div>
+                        <div class="card-header">
+                            <div class="card-icon" style="--accent: #a78bfa">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="card-name">Planner Agent</h3>
+                                <span class="card-role">Strategy & Planning</span>
+                            </div>
+                            <div class="card-status idle" id="status-planner">IDLE</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-progress" id="progress-planner"><div class="progress-bar"></div></div>
+                            <p class="card-action" id="action-planner">Waiting for mission...</p>
+                        </div>
+                    </div>
+
+                    <!-- Researcher -->
+                    <div class="agent-card" id="card-researcher" data-agent="researcher">
+                        <div class="card-accent" style="--accent: #60a5fa"></div>
+                        <div class="card-header">
+                            <div class="card-icon" style="--accent: #60a5fa">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="card-name">Researcher Agent</h3>
+                                <span class="card-role">RAG & Knowledge Retrieval</span>
+                            </div>
+                            <div class="card-status idle" id="status-researcher">IDLE</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-progress" id="progress-researcher"><div class="progress-bar"></div></div>
+                            <p class="card-action" id="action-researcher">Waiting for mission...</p>
+                        </div>
+                    </div>
+
+                    <!-- Coder -->
+                    <div class="agent-card" id="card-coder" data-agent="coder">
+                        <div class="card-accent" style="--accent: #34d399"></div>
+                        <div class="card-header">
+                            <div class="card-icon" style="--accent: #34d399">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="card-name">Coder Agent</h3>
+                                <span class="card-role">Implementation & Deployment</span>
+                            </div>
+                            <div class="card-status idle" id="status-coder">IDLE</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-progress" id="progress-coder"><div class="progress-bar"></div></div>
+                            <p class="card-action" id="action-coder">Waiting for mission...</p>
+                        </div>
+                    </div>
+
+                    <!-- Critic -->
+                    <div class="agent-card" id="card-critic" data-agent="critic">
+                        <div class="card-accent" style="--accent: #f472b6"></div>
+                        <div class="card-header">
+                            <div class="card-icon" style="--accent: #f472b6">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="card-name">Critic Agent</h3>
+                                <span class="card-role">Evaluation & Reflection</span>
+                            </div>
+                            <div class="card-status idle" id="status-critic">IDLE</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-progress" id="progress-critic"><div class="progress-bar"></div></div>
+                            <p class="card-action" id="action-critic">Waiting for mission...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Complete Overlay -->
+        <div class="overlay" id="overlay">
+            <div class="overlay-card">
+                <div class="overlay-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <h2 class="overlay-title">Mission Accomplished!</h2>
+                <p class="overlay-sub" id="overlaySummary"></p>
+                <button class="start-btn" onclick="dismissOverlay()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                    Run Again
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
